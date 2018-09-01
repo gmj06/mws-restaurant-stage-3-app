@@ -1,0 +1,25 @@
+{
+    "short_name": "mwsapp-s2",
+    "name": "udacity-mws-restaurant-stage-2",
+    "icons": [
+      {
+        "src": "/img/icons-192.jpg",
+        "type": "image/png",
+        "sizes": "192x192"
+      },
+      {
+        "src": "/img/icons-512.jpg",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ],
+    "start_url": "/index.html",
+    "background_color": "#3367D6",
+    "display": "standalone",
+    "scope": "/index.html",
+    "theme_color": "#3367D6",    
+    "default_locale": "en",
+    "description": "Udacity MWS Nanodegree Restaurant Project Stage 2",
+    "manifest_version": 1,
+    "version": "0.1"
+  }
