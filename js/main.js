@@ -161,6 +161,22 @@ createRestaurantHTML = (restaurant) => {
   name.innerHTML = restaurant.name;
   li.append(name);
 
+ 
+  var isFavorite = (restaurant.is_favorite && restaurant.is_favorite == "true") ? true : false;  
+  const btnFavorite = document.createElement('button');
+  btnFavorite.innerHTML = '❤';  
+  btnFavorite.type = "button"
+  btnFavorite.setAttribute('id', `btnFavorite-${restaurant.id}`);
+  btnFavorite.classList.add("btn-favorite");  
+  btnFavorite.onclick = () => {
+    var currentState = !restaurant.is_favorite;
+    DBHelper.updateIsFavorite(restaurant.id, currentState);
+    restaurant.is_favorite = !restaurant.is_favorite;
+    changeBtnFavoriteClass(btnFavorite, restaurant.is_favorite);
+  }
+  changeBtnFavoriteClass(btnFavorite, restaurant.is_favorite);
+  li.append(btnFavorite);
+
   const neighborhood = document.createElement('p');
   neighborhood.innerHTML = restaurant.neighborhood;
   li.append(neighborhood);
@@ -189,5 +205,33 @@ addMarkersToMap = (restaurants = self.restaurants) => {
       window.location.href = marker.url
     });
     self.markers.push(marker);
-  });
+  });  
 }
+
+/**
+   * Change class based on btnFavorite button click
+   */
+  changeBtnFavoriteClass = (btn, currentState) => {
+    if(!currentState){  
+      btn.classList.remove("btn-favorite-true");
+      btn.classList.add('btn-favorite-false');
+      btn.setAttribute('aria-label', 'Make me as your favorite restaurant');
+      btn.setAttribute('text', 'Make me as your favorite restaurant');
+    }else{
+      btn.classList.remove('btn-favorite-false');    
+      btn.classList.add("btn-favorite-true");
+      btn.setAttribute('aria-label', 'I am your favorite restaurant');
+      btn.setAttribute('text', 'I am your favorite restaurant');
+    }  
+  }
+  
+  /**
+   * Updating the restaurant is_favorite state.
+   */
+  // isFavoriteClicked = (restaurant, newState) => {
+  //   //restaurant.is_favorite = newState;      
+  //   //DBHelper.updateIsFavorite(restaurant, newState);
+  //   console.log("old state..", restaurant["is_favorite"], "..new state...", !restaurant["is_favorite"]);
+  //   changeBtnFavoriteClass(document.getElementById(`btnFavorite-${restaurant.id}`), restaurant.is_favorite);
+   
+  // }

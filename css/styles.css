@@ -324,6 +324,23 @@ nav h1 a {
   top:0;
 }
 
+.btn-favorite, .btn-favorite-true, .btn-favorite-false {
+  background: transparent no-repeat; 
+  border: none;
+  cursor:pointer;
+  overflow: hidden;
+  outline:none;
+  font-size: 1.5em;  
+}
+
+.btn-favorite-false {
+  color: rgb(139, 134, 134);
+}
+
+.btn-favorite-true {
+  color: rgb(228, 72, 72);
+}
+
 /* =============================== Responsive Styles ===============================*/
 
 #restaurants-list li {

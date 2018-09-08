@@ -63,5 +63,24 @@ class IDBHelper {
         });
     };
 
+    static updateIsFavorite(restaurantId, newState){
+        fetch(`http://localhost:1337/restaurants/${restaurantId}/?is_favorite=${newState}`, {
+            method: 'PUT'
+          })
+          .then(() => {
+            console.log(`Favorite status of restaurant ${restaurantId} is successfully changed to ${newState}`);
+            return IDBHelper.openIDB().then(db => {
+                if(!db) return;
+                var tx = db.transaction(OBJECTSTORE, 'readwrite');
+                var restaurantObjectStore = tx.objectStore(OBJECTSTORE);
+                restaurantObjectStore.get(restaurantId)
+                .then(restaurant => {
+                    restaurant.is_favorite = newState;
+                    restaurantObjectStore.put(restaurant);
+                });            
+            })
+          })
+          .catch(error => console.log('updateIsFavorite', error));    
+    }
 
 }
