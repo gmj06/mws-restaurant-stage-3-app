@@ -12,7 +12,7 @@
   <!-- manifest and meta theme color -->
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#c15641">
-  
+
 </head>
 
 <body class="inside">
@@ -50,7 +50,6 @@
       <div id="map"></div>
       <div id="restaurant-hours-info">
         <p id="restaurant-address"></p>
-        <h3>Hours of Operation</h3>
         <table id="restaurant-hours">
         </table>
       </div>
@@ -58,6 +57,43 @@
     <!-- End map -->
     <!-- Beginning reviews -->
     <section id="reviews-container">
+      <div id="add-review-container">
+        <form id="new-review-form" action="">
+          <div class="row">
+            <div class="col-25">
+              <label for="reviewer-name">Name</label>
+            </div>
+            <div class="col-75">
+              <input type="text" id="reviewer-name" placeholder="Enter your name" aria-label="reviewer-name">
+            </div>
+          </div>
+          <div class="row">
+              <div class="col-25">
+                <label for="reviewer-rating-select">Rating</label>
+              </div>
+              <div class="col-75">
+                <select id="reviewer-rating-select" aria-label="reviewer-rating-select">
+                  <option value="1"> 1 </option>
+                  <option value="2"> 2 </option>
+                  <option value="3"> 3 </option>
+                  <option value="4"> 4 </option>
+                  <option value="5"> 5 </option>
+                </select>
+              </div>
+          </div>
+          <div class="row">
+              <div class="col-25">
+                <label for="reviewer-comments">Comments</label>
+              </div>
+              <div class="col-75">
+                <textarea id="reviewer-comments" name="reviewer-comments" placeholder="Enter your comments" aria-label="reviewer-comments" rows="10" cols="20"></textarea>                
+              </div>
+          </div>         
+          <div class="row">
+            <button type="button" id="add-review-submit" onclick="addNewReview()">Submit</button>
+          </div>
+        </form>
+      </div>
       <ul id="reviews-list"></ul>
     </section>
     <!-- End reviews -->
@@ -76,7 +112,7 @@
   <!-- Beginning scripts -->
   <!-- IndexDB helpers -->
   <script type="application/javascript" charset="utf-8" src="js/idb.js"></script>
-  <script type="application/javascript" charset="utf-8" src="js/idbhelper.js"></script>  
+  <script type="application/javascript" charset="utf-8" src="js/idbhelper.js"></script>
   <!-- Database helpers -->
   <script type="text/javascript" src="js/dbhelper.js"></script>
   <!-- Main javascript file -->

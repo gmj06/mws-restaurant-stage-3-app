@@ -186,8 +186,10 @@ nav h1 a {
   line-height: 1.3;
   margin: 20px 0 10px;
   text-transform: uppercase;
-  text-align: center;
+  text-align: center; 
 }
+
+
 #restaurants-list p {
   margin: 0;
   font-size: 11pt;
@@ -279,7 +281,19 @@ nav h1 a {
   padding-bottom: 1pt;
   text-transform: uppercase;
   text-align: center;
+  display: inline-block;
 }
+
+#reviews-container-heading button {
+  float: right;
+  padding: 12px 20px;
+  color: white;
+  background-color:#f58500;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
 #reviews-list {
   margin: 0;
   padding: 0;
@@ -324,6 +338,8 @@ nav h1 a {
   top:0;
 }
 
+/* ======================== Favorite Button Styles ================================ */
+
 .btn-favorite, .btn-favorite-true, .btn-favorite-false {
   background: transparent no-repeat; 
   border: none;
@@ -341,20 +357,83 @@ nav h1 a {
   color: rgb(228, 72, 72);
 }
 
+/* =============================== Add Review Styles ===============================*/
+#add-review-container {
+  max-width: 100%;
+  align-items: center;
+  display: none;
+  padding: 10px 25px;
+}
+
+#add-review-container input[type=text], select, textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
+}
+
+#add-review-container select option {
+  max-width: 100%;
+}
+
+#add-review-container label {
+  padding: 10px 10px 10px 0;
+  display: inline-block;
+  text-align: right;
+}
+
+#add-review-submit{
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  float: right;
+}
+
+.col-25 {
+  float: left;
+  width: 25%;  
+}
+
+.col-75 {
+  float: left;
+  width: 75%;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
 /* =============================== Responsive Styles ===============================*/
 
 #restaurants-list li {
   max-width: 100%;
 }
 
+#add-review {
+  max-width: 100%;
+}
+
+@media screen and (max-width: 600px) {
+  .col-25, .col-75, #add-review-submit {
+    width: 100%;     
+  }
+}
+
 @media screen and (min-width: 700px){
   #restaurants-list li {
     max-width: 45%;
-  }  
+  }   
 }
 
 @media screen and (min-width: 1200px){
   #restaurants-list li {
     max-width: 350px;
-  }  
+  }   
 }

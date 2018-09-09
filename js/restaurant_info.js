@@ -75,13 +75,18 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   }
   // fill reviews
   fillReviewsHTML();
+  // DBHelper.fetchReviewsByRestaurantId(restaurant.id, fillReviewsHTML);
 }
 
 /**
  * Create restaurant operating hours HTML table and add it to the webpage.
  */
-fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => {
+fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => {  
+  const title = document.createElement('h3');
+  title.innerHTML = 'Hours of Operation';
+    
   const hours = document.getElementById('restaurant-hours');
+  hours.insertBefore(title, hours.childNodes[0]);
   for (let key in operatingHours) {
     const row = document.createElement('tr');
 
@@ -100,11 +105,34 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+fillReviewsHTML = (error, reviews = self.restaurant.reviews) => {
   const container = document.getElementById('reviews-container');
+
+  const reviewsHeading = document.createElement('div');
+  reviewsHeading.setAttribute('id', 'reviews-container-heading');
+  container.appendChild(reviewsHeading);
+
   const title = document.createElement('h2');
   title.innerHTML = 'Reviews';
-  container.appendChild(title);
+  reviewsHeading.appendChild(title);
+
+  const btnAddAReview = document.createElement('button');
+  btnAddAReview.innerHTML = "Add a Review";
+  btnAddAReview.onclick = () => {
+    const newReviewForm = document.getElementById('add-review-container');
+
+    if(btnAddAReview.innerHTML == 'Add a Review'){
+      newReviewForm.style.display = 'block';  
+      btnAddAReview.innerHTML = "Hide Add Review";
+      container.appendChild(newReviewForm);
+    }else{
+      btnAddAReview.innerHTML = "Add a Review";
+      newReviewForm.style.display = 'none';
+    }
+  }
+  reviewsHeading.appendChild(btnAddAReview);
+
+  //const btnAddReviewSubmit = document.getElementById('');
 
   if (!reviews) {
     const noReviews = document.createElement('p');
@@ -167,4 +195,14 @@ getParameterByName = (name, url) => {
   if (!results[2])
     return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+
+addNewReview = () => {
+  const reviewAuthor = document.getElementById("reviewer-name").value;
+  const reviewerRatingSelect = document.getElementById("reviewer-rating-select");
+  const reviewerRating = reviewerRatingSelect.options[reviewerRatingSelect.selectedIndex].value;
+  const reviewerComments = document.getElementById("reviewer-comments").value;
+  
+  console.log(self.restaurant.id, reviewAuthor , reviewerRating, reviewerComments);
 }

@@ -1,5 +1,6 @@
 const port = 1337 // Change this to your server port
 const OBJECTSTORE = 'restaurants';
+const REVIEWOBJECTSTORE = 'reviews';
 
 
 /**
@@ -20,7 +21,9 @@ class IDBHelper {
                 case 1:
                     var restaurantStore = upgradeDb.transaction.objectStore(OBJECTSTORE);
                     restaurantStore.createIndex('by-id', 'id');
-
+                // case 2:
+                //     var reviewStore = upgradeDb.createObjectStore(REVIEWOBJECTSTORE, { keyPath: 'restaurant-id' });
+                //     reviewStore.createIndex('by-restaurant-id', 'restaurant-id');
             }
         });
     }
@@ -72,15 +75,18 @@ class IDBHelper {
             return IDBHelper.openIDB().then(db => {
                 if(!db) return;
                 var tx = db.transaction(OBJECTSTORE, 'readwrite');
+                
                 var restaurantObjectStore = tx.objectStore(OBJECTSTORE);
                 restaurantObjectStore.get(restaurantId)
                 .then(restaurant => {
                     restaurant.is_favorite = newState;
                     restaurantObjectStore.put(restaurant);
-                });            
+                })           
             })
           })
           .catch(error => console.log('updateIsFavorite', error));    
     }
+
+   // static fetchRestaurantReviews
 
 }
