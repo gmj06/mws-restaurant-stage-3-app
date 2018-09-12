@@ -1,18 +1,24 @@
 let restaurantNeighborhoods;
 let restaurantCuisines;
+//const port = 1337 // Change this to your server port
 
 /**
  * Common database helper functions.
  */
 class DBHelper {
-
-  /**
+ /**
    * Database URL.
    * Change this to restaurants.json file location on your server.
    */
-  static get DATABASE_URL() {
-    const port = 1337 // Change this to your server port
+  static get DATABASE_URL() {   
     return `http://localhost:${port}/restaurants`;
+  }
+  
+  /**
+   * Database Review URL. 
+   */
+  static get DATABASE_REVIEW_URL() {   
+    return `http://localhost:${port}/reviews`;
   }
 
   /**
@@ -28,7 +34,7 @@ class DBHelper {
         return IDBHelper.fetchFromAPIInsertIntoIDB(id);
       }
     }).then(restaurants => {
-      //console.log("dbhelper .. restaurants...", restaurants);
+      console.log("dbhelper .. restaurants...", restaurants);
       const neighborhoods = restaurants.map((v, i) => restaurants[i].neighborhood);
       restaurantNeighborhoods = neighborhoods.filter((v, i) => neighborhoods.indexOf(v) == i);
       //console.log("dbhelper .. restaurantNeighborhoods", restaurantNeighborhoods);
@@ -222,5 +228,59 @@ class DBHelper {
    */
   static updateIsFavorite(restaurantId, newState){
     IDBHelper.updateIsFavorite(restaurantId, newState);   
+  }
+
+
+  /**
+   * Fetch all reviews.
+   */
+  static fetchReviewsByRestaurantId(restaurantId, callback)  {
+    //console.log("dbhelper .. fetchReviewsByRestaurantId ObjectStore", IDBHelper.name);
+    return IDBHelper.fetchReviewsFromIDBByRestaurantId(restaurantId).then(reviews => {
+      //console.log("idbhelper .. fetchReviewsByRestaurantId IDB", reviews);
+      if (reviews && reviews.length > 0) {
+        //console.log("dbhelper .. fetchReviewsByRestaurantId .. if");
+        return Promise.resolve(reviews);
+      } else {
+        //console.log("dbhelper .. fetchReviewsByRestaurantId .. else");
+        return IDBHelper.fetchReviewsFromAPIInsertIntoIDB(restaurantId);
+      }
+    }).then(reviews => { 
+      //console.log("dbhelper .. fetchReviewsByRestaurantId then", reviews);        
+      callback(null, reviews.reverse());
+    }).catch(error => {
+      callback(error, null);
+    });
+  }
+
+  static addNewReview(restaurantId, reviewObj, callback){
+    if(!window.navigator.onLine && type === 'review'){
+      localStorage.setItem('offline-review-data', JSON.stringify({
+        data: reviewObj,
+        type: 'review'
+      }));
+
+      window.addEventListener('online', event => {
+        const offlineData = JSON.parse(localStorage.getItem('offline-review-data'));
+        const offlineReviews = document.querySelectorAll('.review-offline-mode');
+        document.querySelector('.offline-mode-label').remove();
+        [...offlineReviews].forEach(review => {
+          review.classList.remove('review-offline-mode');
+        })
+
+        if(offlineData && offlineData.type === 'review'){
+          DBhelper.addNewReview(restaurantId,offlineData.data, callback);
+          localStorage.removeItem('offline-review-data');
+        }
+      });
+    }
+
+    IDBHelper.addNewReview(restaurantId, reviewObj, (error, result) =>{
+      if(error){
+        callback(error, null);
+        return;
+      }
+      callback(null, result);
+    });   
   }
 }

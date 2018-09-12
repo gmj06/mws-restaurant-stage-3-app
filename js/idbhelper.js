@@ -14,16 +14,17 @@ class IDBHelper {
         //       importScripts('js/idb.js');
         // }
 
-        return idb.open('restaurants', 2, function (upgradeDb) {
+        return idb.open('restaurants', 4, function (upgradeDb) {
             switch (upgradeDb.oldVersion) {
                 case 0:
                     upgradeDb.createObjectStore(OBJECTSTORE, { keyPath: 'id' });
                 case 1:
                     var restaurantStore = upgradeDb.transaction.objectStore(OBJECTSTORE);
                     restaurantStore.createIndex('by-id', 'id');
-                // case 2:
-                //     var reviewStore = upgradeDb.createObjectStore(REVIEWOBJECTSTORE, { keyPath: 'restaurant-id' });
-                //     reviewStore.createIndex('by-restaurant-id', 'restaurant-id');
+                case 2:
+                    var reviewStore = upgradeDb.createObjectStore(REVIEWOBJECTSTORE, { keyPath: 'id' });
+                    reviewStore.createIndex('by-restaurant-id', 'restaurant_id');
+                    reviewStore.createIndex('by-review-id', 'id');
             }
         });
     }
@@ -67,7 +68,7 @@ class IDBHelper {
     };
 
     static updateIsFavorite(restaurantId, newState){
-        fetch(`http://localhost:1337/restaurants/${restaurantId}/?is_favorite=${newState}`, {
+        fetch(`${DBHelper.DATABASE_URL}/${restaurantId}/?is_favorite=${newState}`, {
             method: 'PUT'
           })
           .then(() => {
@@ -87,6 +88,77 @@ class IDBHelper {
           .catch(error => console.log('updateIsFavorite', error));    
     }
 
-   // static fetchRestaurantReviews
+    static fetchReviewsFromIDBByRestaurantId(restaurantId) {
+        console.log("idbhelper..fetchReviewsFromIDBByRestaurantId", restaurantId);
+        return IDBHelper.openIDB().then(db => {
+            if (!db) return;
+            var store = db.transaction(REVIEWOBJECTSTORE).objectStore(REVIEWOBJECTSTORE).index('by-review-id');
+            console.log("fetchReviewsFromIDBByRestaurantId", store.getAll());
+            return store.getAll();
+        });
+    };
+
+    static insertReviewsIntoIndexDBByRestaurantId(data) {
+        console.log("idbhelper..insertReviewsIntoIndexDBByRestaurantId.. 1", data);
+        return IDBHelper.openIDB().then(function (db) {
+            if (!db) return;
+
+            var tx = db.transaction(REVIEWOBJECTSTORE, 'readwrite');
+            var store = tx.objectStore(REVIEWOBJECTSTORE);           
+            data.forEach(review => {
+                console.log("idbhelper..inserting reviews", review);
+                store.put(review);
+            });
+            return tx.complete;
+        });
+    };
+
+    static fetchReviewsFromAPIInsertIntoIDB(restaurantId) {
+        console.log("idbhelper.. fetchReviewsFromAPIInsertIntoIDB..", DBHelper.DATABASE_REVIEW_URL);
+        return fetch(`${DBHelper.DATABASE_REVIEW_URL}/?restaurant_id=${restaurantId}`)
+            .then(response => {
+                return response.json()
+            }).then(IDBHelper.insertReviewsIntoIndexDBByRestaurantId)
+    };
+
+    static addNewReviewToIDB(restaurantId, reviewObj){
+        console.log("idbhelper..addNewReviewToIDB..", reviewObj);
+        return IDBHelper.openIDB().then(function (db) {
+            if (!db) return;
+
+            var store = db.transaction(REVIEWOBJECTSTORE, 'readwrite').objectStore(REVIEWOBJECTSTORE); 
+           // var store = tx.objectStore(REVIEWOBJECTSTORE);           
+            data.forEach(review => {
+                console.log("idbhelper..inserting reviews", review);
+                store.put(review);
+            });
+            return tx.complete;
+        });
+    }
+
+    static addNewReview(restaurantId, reviewObj, callback){
+        //addNewReviewToIDB(restaurantId, reviewObj);
+        const options = {
+            method: 'POST',
+            data: JSON.stringify(reviewObj)
+            // ,headers: {
+            //     "Content-Type": "application/json; charset=utf-8"
+            // }
+        };
+
+        fetch(`${DBHelper.DATABASE_REVIEW_URL}`, {
+            method: 'POST',
+            body: JSON.stringify(reviewObj)
+        })
+        .then(response => response.json())
+        .then(review => {
+            console.log("Successfully added new review to database", review);
+            callback(null, review);
+        })
+        .catch(error => {
+            console.log('Unable to add new review to database', error);
+            callback(error, null);
+        });
+    }
 
 }

@@ -162,12 +162,13 @@ createRestaurantHTML = (restaurant) => {
   li.append(name);
 
  
-  //var isFavorite = (restaurant.is_favorite && restaurant.is_favorite == "true") ? true : false;  
+  var isFavorite = (restaurant.is_favorite && restaurant.is_favorite == "true") ? true : false;  
   const btnFavorite = document.createElement('button');
   btnFavorite.innerHTML = '❤';  
   btnFavorite.type = "button"
   btnFavorite.setAttribute('id', `btnFavorite-${restaurant.id}`);
   btnFavorite.classList.add("btn-favorite");  
+  restaurant.is_favorite = isFavorite;
   btnFavorite.onclick = () => {
     var currentState = !restaurant.is_favorite;
     DBHelper.updateIsFavorite(restaurant.id, currentState);

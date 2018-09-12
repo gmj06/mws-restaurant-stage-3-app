@@ -284,7 +284,7 @@ nav h1 a {
   display: inline-block;
 }
 
-#reviews-container-heading button {
+#reviews-container-heading #add-review-btn {
   float: right;
   padding: 12px 20px;
   color: white;
@@ -408,6 +408,26 @@ nav h1 a {
   content: "";
   display: table;
   clear: both;
+}
+
+.error-message {
+  font-size: 11px;
+  color: red;
+  font-weight: bold;
+}
+
+.mandatory {
+  color: red;
+}
+
+.offline-mode-label {
+  font-weight: bolder;
+  color: red;
+  font-style: italic;
+}
+
+.review-offline-mode {
+  color: gray;
 }
 
 /* =============================== Responsive Styles ===============================*/
