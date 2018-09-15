@@ -253,14 +253,11 @@ class DBHelper {
     });
   }
 
-  static addNewReview(restaurantId, reviewObj, callback){
-    if(!window.navigator.onLine && type === 'review'){
-      localStorage.setItem('offline-review-data', JSON.stringify({
-        data: reviewObj,
-        type: 'review'
-      }));
+  static updateReviewWhenOnline(obj, callback){
+    localStorage.setItem('offline-review-data', JSON.stringify(obj.data));
 
       window.addEventListener('online', event => {
+        console.log("connection is online now");
         const offlineData = JSON.parse(localStorage.getItem('offline-review-data'));
         const offlineReviews = document.querySelectorAll('.review-offline-mode');
         document.querySelector('.offline-mode-label').remove();
@@ -268,11 +265,26 @@ class DBHelper {
           review.classList.remove('review-offline-mode');
         })
 
-        if(offlineData && offlineData.type === 'review'){
-          DBhelper.addNewReview(restaurantId,offlineData.data, callback);
+        console.log("OFFLINEDATE....", offlineData);
+        if(offlineData != null){          
+          if(obj.type === 'review'){
+            console.log("OFFLINE MODE", offlineData);
+            this.addNewReview(offlineData["restaurant_id"],offlineData, callback); 
+          }       
           localStorage.removeItem('offline-review-data');
-        }
+        }        
       });
+  }
+
+  static addNewReview(restaurantId, reviewObj, callback){
+    const obj = {
+      data: reviewObj,
+      type: 'review'
+    };
+
+    if(!window.navigator.onLine && obj.type === 'review'){
+      this.updateReviewWhenOnline(obj, callback);
+      return;
     }
 
     IDBHelper.addNewReview(restaurantId, reviewObj, (error, result) =>{
@@ -283,4 +295,6 @@ class DBHelper {
       callback(null, result);
     });   
   }
+
+  
 }
