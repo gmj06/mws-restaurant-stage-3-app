@@ -4,10 +4,8 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- Normalize.css for better cross-browser consistency -->
-  <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
-  <!-- Main CSS file -->
-  <link rel="stylesheet" href="css/styles.css" type="text/css">
-  <script type="application/javascript" src="js/register_service_worker.js"></script>
+  <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" >
+  <script async type="application/javascript" src="js/register_service_worker.js"></script>
   <title>Restaurant Info</title>
   <!-- manifest and meta theme color -->
   <link rel="manifest" href="/manifest.json">
@@ -111,14 +109,17 @@
   </footer>
   <!-- End footer -->
 
+  <!-- Main CSS file -->
+  <link rel="stylesheet" href="css/styles.css" type="text/css" >
+  
   <!-- Beginning scripts -->
   <!-- IndexDB helpers -->
-  <script type="application/javascript" charset="utf-8" src="js/idb.js"></script>
-  <script type="application/javascript" charset="utf-8" src="js/idbhelper.js"></script>
+  <script async type="application/javascript" charset="utf-8" src="js/idb.js"></script>
+  <script async type="application/javascript" charset="utf-8" src="js/idbhelper.js"></script>
   <!-- Database helpers -->
-  <script type="text/javascript" src="js/dbhelper.js"></script>
+  <script async type="text/javascript" src="js/dbhelper.js"></script>
   <!-- Main javascript file -->
-  <script type="text/javascript" src="js/restaurant_info.js"></script>
+  <script async type="text/javascript" src="js/restaurant_info.js"></script>
   <!-- Google Maps -->
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=&libraries=places&callback=initMap"></script>
   <!-- End scripts -->
