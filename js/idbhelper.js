@@ -31,7 +31,7 @@ class IDBHelper {
 
     static insertIntoIndexDB(data) {
         console.log("idbhelper..insertIntoIDB..", data);
-        return IDBHelper.openIDB().then(function (db) {
+        IDBHelper.openIDB().then(function (db) {
             if (!db) return;
 
             var tx = db.transaction(OBJECTSTORE, 'readwrite');
@@ -39,8 +39,10 @@ class IDBHelper {
             data.forEach(restaurant => {
                 store.put(restaurant);
             });
-            return tx.complete;
+            // return tx.complete;           
         });
+        console.log("idbhelper..insertIntoIndexDB..", data);
+        return data;
     };
 
 
@@ -52,10 +54,14 @@ class IDBHelper {
             fetchURL = DBHelper.DATABASE_URL + '/' + id;
         }
         console.log("idbhelper.. fetchFromAPIInsertIntoIDB");
-        return fetch(fetchURL)
+        return  fetch(fetchURL)
             .then(response => {
                 return response.json()
-            }).then(IDBHelper.insertIntoIndexDB)
+            })
+            .then(restaurants => {
+                IDBHelper.insertIntoIndexDB(restaurants);
+                return restaurants;
+            });        
     };
 
     static fetchFromIDB() {
@@ -118,7 +124,10 @@ class IDBHelper {
         return fetch(`${DBHelper.DATABASE_REVIEW_URL}/?restaurant_id=${restaurantId}`)
             .then(response => {
                 return response.json()
-            }).then(IDBHelper.insertReviewsIntoIndexDBByRestaurantId)
+            }).then(reviews => {
+                IDBHelper.insertReviewsIntoIndexDBByRestaurantId(reviews);
+                return reviews;
+            });
     };
 
     static addNewReviewToIDB(restaurantId, reviewObj){

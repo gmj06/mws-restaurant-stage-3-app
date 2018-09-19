@@ -3,14 +3,17 @@
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Normalize.css for better cross-browser consistency -->
-  <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" >
-  <script async type="application/javascript" src="js/register_service_worker.js"></script>
+  <meta name="theme-color" content="#c15641">
+  <meta name="Description" content="Udacity Project Stage 3">
+  <base href="/">
   <title>Restaurant Info</title>
   <!-- manifest and meta theme color -->
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#c15641">
-  <meta name="Description" content="Udacity Project Stage 3">
+  <!-- Normalize.css for better cross-browser consistency -->
+  <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" >
+  <!-- Main CSS file -->
+  <link rel="stylesheet" href="css/styles.css" type="text/css" >
+  
 </head>
 
 <body class="inside">
@@ -109,10 +112,10 @@
   </footer>
   <!-- End footer -->
 
-  <!-- Main CSS file -->
-  <link rel="stylesheet" href="css/styles.css" type="text/css" >
+  
   
   <!-- Beginning scripts -->
+  <script async type="application/javascript" src="js/register_service_worker.js"></script>
   <!-- IndexDB helpers -->
   <script async type="application/javascript" charset="utf-8" src="js/idb.js"></script>
   <script async type="application/javascript" charset="utf-8" src="js/idbhelper.js"></script>

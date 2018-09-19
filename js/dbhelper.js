@@ -21,30 +21,63 @@ class DBHelper {
     return `http://localhost:${port}/reviews`;
   }
 
+  // static updateRestaurantDependents(restaurants){
+  //   console.log("dbhelper .. updateRestaurantDependents", restaurants);
+  //   const neighborhoods = restaurants.map((v, i) => restaurants[i].neighborhood);
+  //     restaurantNeighborhoods = neighborhoods.filter((v, i) => neighborhoods.indexOf(v) == i);
+      
+  //     const cuisines = restaurants.map((v, i) => restaurants[i].cuisine_type);
+  //     restaurantCuisines = cuisines.filter((v, i) => cuisines.indexOf(v) == i);
+  // }
+
   /**
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback, id) {
     //console.log("dbhelper .. objectstore ", IDBHelper.name);
-    return IDBHelper.fetchFromIDB().then(restaurants => {
-      //console.log("idbhelper .. fetchRestaurants", restaurants);
+    return IDBHelper.fetchFromIDB()
+    .then(restaurants => {      
       if (restaurants.length > 0) {
-        return Promise.resolve(restaurants);
+        return Promise.resolve(restaurants);        
       } else {
-        return IDBHelper.fetchFromAPIInsertIntoIDB(id);
+        return IDBHelper.fetchFromAPIInsertIntoIDB(id);        
       }
-    }).then(restaurants => {
-      console.log("dbhelper .. restaurants...", restaurants);
-      const neighborhoods = restaurants.map((v, i) => restaurants[i].neighborhood);
-      restaurantNeighborhoods = neighborhoods.filter((v, i) => neighborhoods.indexOf(v) == i);
-      //console.log("dbhelper .. restaurantNeighborhoods", restaurantNeighborhoods);
-      const cuisines = restaurants.map((v, i) => restaurants[i].cuisine_type);
-      restaurantCuisines = cuisines.filter((v, i) => cuisines.indexOf(v) == i);
-      //console.log("dbhelper .. restaurantCuisines", restaurantCuisines);      
-      callback(null, restaurants);
+    }).then(restaurants =>{
+     //updateRestaurantDependents(restaurants);
+     const neighborhoods = restaurants.map((v, i) => restaurants[i].neighborhood);
+     restaurantNeighborhoods = neighborhoods.filter((v, i) => neighborhoods.indexOf(v) == i);
+     
+     const cuisines = restaurants.map((v, i) => restaurants[i].cuisine_type);
+     restaurantCuisines = cuisines.filter((v, i) => cuisines.indexOf(v) == i);
+     callback(null, restaurants);
     }).catch(error => {
       callback(error, null);
     });
+  }
+
+  
+
+  // static fetchRestaurants(callback, id) {
+  //   //console.log("dbhelper .. objectstore ", IDBHelper.name);
+  //   return IDBHelper.fetchFromIDB().then(restaurants => {
+  //     //console.log("idbhelper .. fetchRestaurants", restaurants);
+  //     if (restaurants.length > 0) {
+  //       Promise.resolve(restaurants);
+  //     } else {
+  //       IDBHelper.fetchFromAPIInsertIntoIDB(id);
+  //     }
+  //   }).then(restaurants => {
+  //     console.log("dbhelper .. restaurants...", restaurants);
+  //     const neighborhoods = restaurants.map((v, i) => restaurants[i].neighborhood);
+  //     restaurantNeighborhoods = neighborhoods.filter((v, i) => neighborhoods.indexOf(v) == i);
+  //     //console.log("dbhelper .. restaurantNeighborhoods", restaurantNeighborhoods);
+  //     const cuisines = restaurants.map((v, i) => restaurants[i].cuisine_type);
+  //     restaurantCuisines = cuisines.filter((v, i) => cuisines.indexOf(v) == i);
+  //     //console.log("dbhelper .. restaurantCuisines", restaurantCuisines);      
+  //     callback(null, restaurants);
+  //   }).catch(error => {
+  //     callback(error, null);
+  //   });
 
 
     // fetch(DBHelper.DATABASE_URL)
@@ -72,7 +105,7 @@ class DBHelper {
     //   }
     // };
     // xhr.send();
-  }
+  //}
 
   /**
    * Fetch a restaurant by its ID.

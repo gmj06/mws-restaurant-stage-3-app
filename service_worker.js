@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    let staticCacheName = "restaurant-v3";
+    let staticCacheName = "restaurant-v4";
 
     const urlsToCache = [
         "/",
@@ -12,7 +12,7 @@
         "/js/idbhelper.js",
         "/js/dbhelper.js",
         "/js/main.js",
-        "/js/restaurant_info.js",
+        "/js/restaurant_info.js",       
         "/js/register_service_worker.js",
         "/manifest.json",
         "/img",
@@ -27,7 +27,7 @@
         "/img/7.jpg",
         "/img/8.jpg",
         "/img/9.jpg",
-        "/img/10.jpg",
+        "/img/10.jpg"
     ];
 
     self.addEventListener("install", event => {

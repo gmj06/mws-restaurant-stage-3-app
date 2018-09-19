@@ -2,16 +2,18 @@
 <html lang="en">
 
 <head>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
-  
-  <script async type="application/javascript" src="js/register_service_worker.js"></script>
-  <title>Restaurant Reviews</title>
-  <!-- manifest and meta theme color -->
-  <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#c15641">
   <meta name="Description" content="Udacity Project Stage 3">
   <meta name="Cache-Control" content="max-age:604800">
+  <base href="/">
+  <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />  
+  
+  <title>Restaurant Reviews</title>
+  <!-- manifest and meta theme color -->
+  <link rel="manifest" href="/manifest.json">
+  <link rel="stylesheet" href="css/styles.css" >
 </head>
 
 <body>
@@ -47,11 +49,12 @@
     </section>
   </main>
 
-  <link rel="stylesheet" href="css/styles.css" >
+  <script async type="application/javascript" charset="utf-8" src="js/register_service_worker.js"></script> 
   <script async type="application/javascript" charset="utf-8" src="js/idb.js"></script>
   <script async type="application/javascript" charset="utf-8" src="js/idbhelper.js"></script>
   <script async type="application/javascript" charset="utf-8" src="js/dbhelper.js"></script>
   <script async type="application/javascript" charset="utf-8" src="js/main.js"></script>
+ 
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBQIcEDJHQfAjAU9DA7PaMHTh8T3BnETkk&libraries=places&callback=initMap"></script>
 
   <footer id="footer">
