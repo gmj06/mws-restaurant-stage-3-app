@@ -5,6 +5,19 @@ var map
 var markers = []
 
 /**
+ * Lazy Loading Images by setting src attribute only after page load and removing data-src attribute 
+ */
+window.onload = () => {
+  [].forEach.call(document.querySelectorAll('img.restaurant-img[data-src]'), function(img) {
+    img.setAttribute('src', img.getAttribute('data-src'));
+    img.onload = function() {
+      img.removeAttribute('data-src');
+    };
+  });  
+}
+
+
+/**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
 document.addEventListener('DOMContentLoaded', (event) => {
@@ -145,15 +158,17 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
 createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
 
-  const image = document.createElement('img');
-  image.className = 'restaurant-img';
   const imageurl = DBHelper.imageUrlForRestaurant(restaurant, "tiles");
   const imgparts = imageurl.split(".");
   const imgurl1x = imgparts[0] + "-350w_1x." + imgparts[1];
   const imgurl2x = imgparts[0] + "-700w_2x." + imgparts[1];
-  image.src = imgurl1x;
+   
+  const image = document.createElement('img');
+  image.className = 'restaurant-img';  
+ // image.src = imgurl1x;
   image.srcset = `${imgurl1x} 350w, ${imgurl2x} 700w`;
   image.alt = restaurant.name + " tile image";
+  image.setAttribute('data-src', imgurl1x);
   li.append(image);
   
 

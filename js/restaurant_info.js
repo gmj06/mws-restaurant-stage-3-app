@@ -2,6 +2,18 @@ let restaurant;
 var map;
 
 /**
+ * Lazy Loading Images by setting src attribute only after page load and removing data-src attribute 
+ */
+window.onload = () => {
+  console.log(document.querySelector(img.restaurant-img));
+  // let img = document.querySelector('img.restaurant-img[data-src]');
+  // img.setAttribute('src', img.getAttribute('data-src'));
+  // img.onload = function () {
+  //   img.removeAttribute('data-src');
+  // };
+}
+
+/**
  * Initialize Google map, called from HTML.
  */
 window.initMap = () => {
@@ -61,10 +73,10 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   const imgparts = imageurl.split(".");
   const imgurl1x = imgparts[0] + "-500w_1x." + imgparts[1];
   const imgurl2x = imgparts[0] + "-800w_2x." + imgparts[1];
-  image.src = imgurl1x;
+  //image.src = imgurl1x;
   image.srcset = `${imgurl1x} 500w, ${imgurl2x} 800w`;
   image.alt = restaurant.name + " banner image";
-  
+  image.setAttribute('data-src', imgurl1x);
 
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
@@ -81,10 +93,10 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 /**
  * Create restaurant operating hours HTML table and add it to the webpage.
  */
-fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => {  
+fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => {
   const title = document.createElement('h3');
   title.innerHTML = 'Hours of Operation';
-    
+
   const hours = document.getElementById('restaurant-hours');
   hours.insertBefore(title, hours.childNodes[0]);
   for (let key in operatingHours) {
@@ -106,11 +118,11 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
  * Create all reviews HTML and add them to the webpage.
  */
 // fillReviewsHTML = (error, reviews = self.restaurant.reviews) => {
-  fillReviewsHTML = (error, reviews) => {
+fillReviewsHTML = (error, reviews) => {
   self.restaurant.reviews = reviews;
 
-  if(error){
-    console.log("fillReviewsHTML...", error);    
+  if (error) {
+    console.log("fillReviewsHTML...", error);
   }
   const container = document.getElementById('reviews-container');
   const reviewsHeading = document.createElement('div');
@@ -128,11 +140,11 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
     newReviewformReset();
     const newReviewForm = document.getElementById('add-review-container');
 
-    if(btnAddAReview.innerHTML == 'Add a Review'){
-      newReviewForm.style.display = 'block';  
+    if (btnAddAReview.innerHTML == 'Add a Review') {
+      newReviewForm.style.display = 'block';
       btnAddAReview.innerHTML = "Hide Add Review";
       reviewsHeading.appendChild(newReviewForm);
-    }else{
+    } else {
       btnAddAReview.innerHTML = "Add a Review";
       newReviewForm.style.display = 'none';
     }
@@ -158,7 +170,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 createReviewHTML = (review) => {
   const li = document.createElement('li');
 
-  if(!window.navigator.onLine){
+  if (!window.navigator.onLine) {
     const offlineLabel = document.createElement('p');
     offlineLabel.innerHTML = "Offline Mode";
     offlineLabel.classList.add('offline-mode-label');
@@ -173,7 +185,7 @@ createReviewHTML = (review) => {
   const date = document.createElement('p');
   let timestamp = new Date(review.createdAt);
   let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-  
+
   date.innerHTML = timestamp.toLocaleDateString("en-US", options);
   li.appendChild(date);
 
@@ -191,7 +203,7 @@ createReviewHTML = (review) => {
 /**
  * Add restaurant name to the breadcrumb navigation menu
  */
-fillBreadcrumb = (restaurant=self.restaurant) => {
+fillBreadcrumb = (restaurant = self.restaurant) => {
   const breadcrumb = document.getElementById('breadcrumb');
   const li = document.createElement('li');
   li.innerHTML = restaurant.name;
@@ -215,7 +227,7 @@ getParameterByName = (name, url) => {
 }
 
 clearErrorMessage = (event, id) => {
-  if(event.keyCode === 13){
+  if (event.keyCode === 13) {
     event.preventDefault();
   }
   document.getElementById(`${id}-error`).innerHTML = "";
@@ -224,13 +236,13 @@ clearErrorMessage = (event, id) => {
 newReviewformReset = () => {
   document.getElementById('new-review-form').reset();
   document.getElementById("reviewer-name-error").innerHTML = "";
-  document.getElementById("reviewer-comments-error").innerHTML = "";  
+  document.getElementById("reviewer-comments-error").innerHTML = "";
 }
 
-addReviewHTMLToDOM = (reviewObj) => { 
+addReviewHTMLToDOM = (reviewObj) => {
   const ul = document.getElementById('reviews-list');
   ul.insertBefore(createReviewHTML(reviewObj), ul.childNodes[0]);
-} 
+}
 
 addNewReview = (event) => {
   //event.preventDefault();
@@ -241,19 +253,19 @@ addNewReview = (event) => {
   const reviewerComments = document.getElementById("reviewer-comments").value;
   document.getElementById("reviewer-name-error").innerHTML = "";
   document.getElementById("reviewer-comments-error").innerHTML = "";
- 
-  if(reviewAuthor == ""){
+
+  if (reviewAuthor == "") {
     document.getElementById("reviewer-name-error").innerHTML = "Please enter your name";
-    return false;    
+    return false;
   }
 
-  if(reviewerComments == ""){
+  if (reviewerComments == "") {
     document.getElementById("reviewer-comments-error").innerHTML = "Please enter your comments";
-    return false;    
+    return false;
   }
- 
+
   document.getElementById("add-review-submit").disabled = true;
-  console.log(self.restaurant.id, reviewAuthor , reviewerRating, reviewerComments);
+  console.log(self.restaurant.id, reviewAuthor, reviewerRating, reviewerComments);
   const reviewObj = {
     "restaurant_id": parseInt(self.restaurant.id),
     "name": reviewAuthor,
@@ -269,9 +281,9 @@ addNewReview = (event) => {
     "createdAt": new Date()
   }
 
- // console.log('robj..', robj);
+  // console.log('robj..', robj);
   DBHelper.addNewReview(self.restaurant.id, reviewObj, (error, review) => {
-    if(error){
+    if (error) {
       console.log("Unable to add new review to server", error);
     }
     document.getElementById("add-review-submit").disabled = false;
@@ -279,5 +291,5 @@ addNewReview = (event) => {
   //DBHelper.addNewReview(self.restaurant.id, reviewObj);
   addReviewHTMLToDOM(IDBobj);
   newReviewformReset();
-  
+
 }

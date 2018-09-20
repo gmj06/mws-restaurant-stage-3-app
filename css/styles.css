@@ -432,6 +432,18 @@ li.review-offline-mode p {
   font-weight: bolder;
 }
 
+/* =============================== Image Lazy Loading Styles ===============================*/
+/*Reference: https://davidwalsh.name/lazyload-image-fade */
+
+img.restaurant-img {
+	opacity: 1;
+	transition: opacity 0.3s;
+}
+
+img.restaurant-img[data-src] {
+	opacity: 0;
+}
+
 /* =============================== Responsive Styles ===============================*/
 
 #restaurants-list li {
