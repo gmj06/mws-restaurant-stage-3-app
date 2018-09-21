@@ -4,17 +4,17 @@
     let staticCacheName = "restaurant-v4";
 
     const urlsToCache = [
-        "./",
-        "./index.html",
-        "./restaurant.html",
-        "./css/styles.css",
-        "./js/idb.js",
-        "./js/idbhelper.js",
-        "./js/dbhelper.js",
-        "./js/main.js",
-        "./js/restaurant_info.js",       
-        //"./js/register_service_worker.js",
-        //"./manifest.json",
+        "/",
+        "/index.html",
+        "/restaurant.html",
+        "/css/styles.css",
+        "/js/idb.js",
+        "/js/idbhelper.js",
+        "/js/dbhelper.js",
+        "/js/main.js",
+        "/js/restaurant_info.js",       
+        "/js/register_service_worker.js"
+        // "/manifest.json",
         // "./img",
         // "./img/tiles",
         // "./img/banners",
@@ -34,12 +34,12 @@
         event.waitUntil(
             caches.open(staticCacheName)
             .then(cache => {
-                return cache.addAll(urlsToCache)
-            })
-            .catch(err => {
-                console.log("Cache Open failed in service worker " + err);
-            })        
-        );
+                return cache
+                .addAll(urlsToCache)            
+                .catch(err => {
+                    console.log("Cache Open failed in service worker " + err);
+                });        
+        }));
     });
 
 

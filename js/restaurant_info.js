@@ -4,14 +4,18 @@ var map;
 /**
  * Lazy Loading Images by setting src attribute only after page load and removing data-src attribute 
  */
-window.onload = () => {
-  console.log(document.querySelector(img.restaurant-img));
-  // let img = document.querySelector('img.restaurant-img[data-src]');
-  // img.setAttribute('src', img.getAttribute('data-src'));
-  // img.onload = function () {
-  //   img.removeAttribute('data-src');
-  // };
-}
+// window.addEventListener('DOMContentLoaded', (event) => {
+//   console.log("eventlistener...load");
+//   let img = document.querySelector('img.restaurant-img[data-src]');
+
+//   img.setAttribute('src', img.getAttribute('data-src'));
+//   img.onload = function () {
+//     img.removeAttribute('data-src');
+//   };
+// });
+ 
+
+
 
 /**
  * Initialize Google map, called from HTML.
@@ -73,10 +77,10 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   const imgparts = imageurl.split(".");
   const imgurl1x = imgparts[0] + "-500w_1x." + imgparts[1];
   const imgurl2x = imgparts[0] + "-800w_2x." + imgparts[1];
-  //image.src = imgurl1x;
+  image.src = imgurl1x;
   image.srcset = `${imgurl1x} 500w, ${imgurl2x} 800w`;
   image.alt = restaurant.name + " banner image";
-  image.setAttribute('data-src', imgurl1x);
+  //image.setAttribute('data-src', imgurl1x);
 
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
