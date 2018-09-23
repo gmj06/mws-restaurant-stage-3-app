@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    let staticCacheName = "restaurant-v4";
+    let staticCacheName = "restaurant-v5";
 
     const urlsToCache = [
         "/",
@@ -13,8 +13,8 @@
         "/js/dbhelper.js",
         "/js/main.js",
         "/js/restaurant_info.js",       
-        "/js/register_service_worker.js"
-        // "/manifest.json",
+        "/js/register_service_worker.js",
+         "/manifest.json",
         // "./img",
         // "./img/tiles",
         // "./img/banners",

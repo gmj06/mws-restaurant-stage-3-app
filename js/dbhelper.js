@@ -1,116 +1,69 @@
+'use strict';
+
 let restaurantNeighborhoods;
 let restaurantCuisines;
+let restaurantsList;
 //const port = 1337 // Change this to your server port
 
 /**
  * Common database helper functions.
  */
 class DBHelper {
- /**
-   * Database URL.
-   * Change this to restaurants.json file location on your server.
-   */
-  static get DATABASE_URL() {   
+  /**
+    * Database URL.
+    * Change this to restaurants.json file location on your server.
+    */
+  static get DATABASE_URL() {
     return `http://localhost:${port}/restaurants`;
   }
-  
+
   /**
    * Database Review URL. 
    */
-  static get DATABASE_REVIEW_URL() {   
+  static get DATABASE_REVIEW_URL() {
     return `http://localhost:${port}/reviews`;
   }
 
-  // static updateRestaurantDependents(restaurants){
-  //   console.log("dbhelper .. updateRestaurantDependents", restaurants);
-  //   const neighborhoods = restaurants.map((v, i) => restaurants[i].neighborhood);
-  //     restaurantNeighborhoods = neighborhoods.filter((v, i) => neighborhoods.indexOf(v) == i);
-      
-  //     const cuisines = restaurants.map((v, i) => restaurants[i].cuisine_type);
-  //     restaurantCuisines = cuisines.filter((v, i) => cuisines.indexOf(v) == i);
-  // }
-
   /**
-   * Fetch all restaurants.
-   */
+  * Fetch all restaurants.
+  */
   static fetchRestaurants(callback, id) {
-    //console.log("dbhelper .. objectstore ", IDBHelper.name);
+    //console.log("dbhelper .. objectstore ", callback);
     return IDBHelper.fetchFromIDB()
-    .then(restaurants => {      
-      if (restaurants.length > 0) {
-        return Promise.resolve(restaurants);        
-      } else {
-        return IDBHelper.fetchFromAPIInsertIntoIDB(id);        
-      }
-    }).then(restaurants =>{
-     //updateRestaurantDependents(restaurants);
-     const neighborhoods = restaurants.map((v, i) => restaurants[i].neighborhood);
-     restaurantNeighborhoods = neighborhoods.filter((v, i) => neighborhoods.indexOf(v) == i);
-     
-     const cuisines = restaurants.map((v, i) => restaurants[i].cuisine_type);
-     restaurantCuisines = cuisines.filter((v, i) => cuisines.indexOf(v) == i);
-     callback(null, restaurants);
-    }).catch(error => {
-      callback(error, null);
-    });
+      .then(restaurants => {
+        if (restaurants.length > 0) {
+          return Promise.resolve(restaurants);
+        } else {
+          return IDBHelper.fetchFromAPIInsertIntoIDB(id);
+        }
+      }).then(restaurants => {
+        restaurantsList = restaurants;
+        console.log("restaurantsList...dbhelper", restaurantsList);
+        const neighborhoods = restaurants.map((v, i) => restaurants[i].neighborhood);
+        restaurantNeighborhoods = neighborhoods.filter((v, i) => neighborhoods.indexOf(v) == i);
+
+        const cuisines = restaurants.map((v, i) => restaurants[i].cuisine_type);
+        restaurantCuisines = cuisines.filter((v, i) => cuisines.indexOf(v) == i);
+        callback(null, restaurants);
+      }).catch(error => {
+        callback(error, null);
+      });
   }
 
-  
-
-  // static fetchRestaurants(callback, id) {
-  //   //console.log("dbhelper .. objectstore ", IDBHelper.name);
-  //   return IDBHelper.fetchFromIDB().then(restaurants => {
-  //     //console.log("idbhelper .. fetchRestaurants", restaurants);
-  //     if (restaurants.length > 0) {
-  //       Promise.resolve(restaurants);
-  //     } else {
-  //       IDBHelper.fetchFromAPIInsertIntoIDB(id);
-  //     }
-  //   }).then(restaurants => {
-  //     console.log("dbhelper .. restaurants...", restaurants);
-  //     const neighborhoods = restaurants.map((v, i) => restaurants[i].neighborhood);
-  //     restaurantNeighborhoods = neighborhoods.filter((v, i) => neighborhoods.indexOf(v) == i);
-  //     //console.log("dbhelper .. restaurantNeighborhoods", restaurantNeighborhoods);
-  //     const cuisines = restaurants.map((v, i) => restaurants[i].cuisine_type);
-  //     restaurantCuisines = cuisines.filter((v, i) => cuisines.indexOf(v) == i);
-  //     //console.log("dbhelper .. restaurantCuisines", restaurantCuisines);      
-  //     callback(null, restaurants);
-  //   }).catch(error => {
-  //     callback(error, null);
-  //   });
-
-
-    // fetch(DBHelper.DATABASE_URL)
-    //   .then(response => response.json())
-    //   .then(restaurants => {
-    //     if(restaurants){
-    //       callback(null, restaurants);
-    //     }
-    //   }).catch(error => {
-    //     callback(`Request failed. Returned status of ${error}`, null);
-    //   });
-
-
-    // let xhr = new XMLHttpRequest();
-    // xhr.open('GET', DBHelper.DATABASE_URL);
-    // xhr.onload = () => {
-    //   if (xhr.status === 200) { // Got a success response from server!
-    //     const json = JSON.parse(xhr.responseText);
-    //     const restaurants = json.restaurants;
-    //     console.log("fetchRestaurants...", restaurants);
-    //     callback(null, restaurants);
-    //   } else { // Oops!. Got an error from server.
-    //     const error = (`Request failed. Returned status of ${xhr.status}`);
-    //     callback(error, null);
-    //   }
-    // };
-    // xhr.send();
-  //}
 
   /**
    * Fetch a restaurant by its ID.
    */
   static fetchRestaurantById(id, callback) {
+    if (restaurantsList !== undefined || (restaurantsList && restaurantsList.length > 0)) {
+      const restaurant = restaurantsList.find(r => r.id == id);
+      if (restaurant) { // Got the restaurant
+        callback(null, restaurant);
+      } else {
+        callback('Restaurant does not exist', null);
+      }
+      return;
+    }
     // fetch all restaurants with proper error handling.
     DBHelper.fetchRestaurants((error, restaurants) => {
       if (error) {
@@ -131,7 +84,12 @@ class DBHelper {
    * Fetch restaurants by a cuisine type with proper error handling.
    */
   static fetchRestaurantByCuisine(cuisine, callback) {
-
+    console.log('restaurantsList cuisine', restaurantsList)
+    if (restaurantsList !== undefined || (restaurantsList && restaurantsList.length > 0)) {
+      const results = restaurantsList.filter(r => r.cuisine_type == cuisine);
+      callback(null, results);
+      return;
+    }
     // Fetch all restaurants  with proper error handling
     DBHelper.fetchRestaurants((error, restaurants) => {
       if (error) {
@@ -148,6 +106,12 @@ class DBHelper {
    * Fetch restaurants by a neighborhood with proper error handling.
    */
   static fetchRestaurantByNeighborhood(neighborhood, callback) {
+    console.log('restaurantsList neighborhood', restaurantsList)
+    if (restaurantsList !== undefined || (restaurantsList && restaurantsList.length > 0)) {
+      const results = restaurantsList.filter(r => r.neighborhood == neighborhood);
+      callback(null, results);
+      return;
+    }
     // Fetch all restaurants
     DBHelper.fetchRestaurants((error, restaurants) => {
       if (error) {
@@ -164,6 +128,18 @@ class DBHelper {
    * Fetch restaurants by a cuisine and a neighborhood with proper error handling.
    */
   static fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, callback) {
+    console.log("dbhelper fetchRestaurantByCuisineAndNeighborhood", restaurantsList);
+    if (restaurantsList !== undefined || (restaurantsList && restaurantsList.length > 0)) {
+      let results = restaurantsList;
+      if (cuisine != 'all') { // filter by cuisine
+        results = results.filter(r => r.cuisine_type == cuisine);
+      }
+      if (neighborhood != 'all') { // filter by neighborhood
+        results = results.filter(r => r.neighborhood == neighborhood);
+      }
+      callback(null, results);
+      return;
+    }
     // Fetch all restaurants
     DBHelper.fetchRestaurants((error, restaurants) => {
       if (error) {
@@ -185,7 +161,8 @@ class DBHelper {
    * Fetch all neighborhoods with proper error handling.
    */
   static fetchNeighborhoods(callback) {
-    if(restaurantNeighborhoods){
+    console.log("dbhelper fetchNeighborhoods", restaurantNeighborhoods);
+    if (restaurantNeighborhoods) {
       callback(null, restaurantNeighborhoods);
       return;
     }
@@ -208,7 +185,7 @@ class DBHelper {
    * Fetch all cuisines with proper error handling.
    */
   static fetchCuisines(callback) {
-    if(restaurantCuisines){
+    if (restaurantCuisines) {
       callback(null, restaurantCuisines);
       return;
     }
@@ -256,18 +233,18 @@ class DBHelper {
     return marker;
   }
 
-   /**
-   * Change restaurant favorite state.
-   */
-  static updateIsFavorite(restaurantId, newState){
-    IDBHelper.updateIsFavorite(restaurantId, newState);   
+  /**
+  * Change restaurant favorite state.
+  */
+  static updateIsFavorite(restaurantId, newState) {
+    IDBHelper.updateIsFavorite(restaurantId, newState);
   }
 
 
   /**
    * Fetch all reviews.
    */
-  static fetchReviewsByRestaurantId(restaurantId, callback)  {
+  static fetchReviewsByRestaurantId(restaurantId, callback) {
     //console.log("dbhelper .. fetchReviewsByRestaurantId ObjectStore", IDBHelper.name);
     return IDBHelper.fetchReviewsFromIDBByRestaurantId(restaurantId).then(reviews => {
       //console.log("idbhelper .. fetchReviewsByRestaurantId IDB", reviews);
@@ -278,7 +255,7 @@ class DBHelper {
         //console.log("dbhelper .. fetchReviewsByRestaurantId .. else");
         return IDBHelper.fetchReviewsFromAPIInsertIntoIDB(restaurantId);
       }
-    }).then(reviews => { 
+    }).then(reviews => {
       //console.log("dbhelper .. fetchReviewsByRestaurantId then", reviews);        
       callback(null, reviews.reverse());
     }).catch(error => {
@@ -286,48 +263,48 @@ class DBHelper {
     });
   }
 
-  static updateReviewWhenOnline(obj, callback){
+  static updateReviewWhenOnline(obj, callback) {
     localStorage.setItem('offline-review-data', JSON.stringify(obj.data));
 
-      window.addEventListener('online', event => {
-        console.log("connection is online now");
-        const offlineData = JSON.parse(localStorage.getItem('offline-review-data'));
-        const offlineReviews = document.querySelectorAll('.review-offline-mode');
-        document.querySelector('.offline-mode-label').remove();
-        [...offlineReviews].forEach(review => {
-          review.classList.remove('review-offline-mode');
-        })
+    window.addEventListener('online', event => {
+      console.log("connection is online now");
+      const offlineData = JSON.parse(localStorage.getItem('offline-review-data'));
+      const offlineReviews = document.querySelectorAll('.review-offline-mode');
+      document.querySelector('.offline-mode-label').remove();
+      [...offlineReviews].forEach(review => {
+        review.classList.remove('review-offline-mode');
+      })
 
-        console.log("OFFLINEDATE....", offlineData);
-        if(offlineData != null){          
-          if(obj.type === 'review'){
-            console.log("OFFLINE MODE", offlineData);
-            this.addNewReview(offlineData["restaurant_id"],offlineData, callback); 
-          }       
-          localStorage.removeItem('offline-review-data');
-        }        
-      });
+      console.log("OFFLINEDATE....", offlineData);
+      if (offlineData != null) {
+        if (obj.type === 'review') {
+          console.log("OFFLINE MODE", offlineData);
+          this.addNewReview(offlineData["restaurant_id"], offlineData, callback);
+        }
+        localStorage.removeItem('offline-review-data');
+      }
+    });
   }
 
-  static addNewReview(restaurantId, reviewObj, callback){
+  static addNewReview(restaurantId, reviewObj, callback) {
     const obj = {
       data: reviewObj,
       type: 'review'
     };
 
-    if(!window.navigator.onLine && obj.type === 'review'){
+    if (!window.navigator.onLine && obj.type === 'review') {
       this.updateReviewWhenOnline(obj, callback);
       return;
     }
 
-    IDBHelper.addNewReview(restaurantId, reviewObj, (error, result) =>{
-      if(error){
+    IDBHelper.addNewReview(restaurantId, reviewObj, (error, result) => {
+      if (error) {
         callback(error, null);
         return;
       }
       callback(null, result);
-    });   
+    });
   }
 
-  
+
 }

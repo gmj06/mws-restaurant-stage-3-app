@@ -1,3 +1,5 @@
+'use strict';
+
 const port = 1337 // Change this to your server port
 const OBJECTSTORE = 'restaurants';
 const REVIEWOBJECTSTORE = 'reviews';
@@ -39,10 +41,9 @@ class IDBHelper {
             data.forEach(restaurant => {
                 store.put(restaurant);
             });
-            // return tx.complete;           
-        });
-        console.log("idbhelper..insertIntoIndexDB..", data);
-        return data;
+            return tx.complete;           
+        });        
+        //return data;
     };
 
 

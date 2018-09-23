@@ -7,14 +7,14 @@ var markers = []
 /**
  * Lazy Loading Images by setting src attribute only after page load and removing data-src attribute 
  */
-window.onload = () => {
-  [].forEach.call(document.querySelectorAll('img.restaurant-img[data-src]'), function(img) {
-    img.setAttribute('src', img.getAttribute('data-src'));
-    img.onload = function() {
-      img.removeAttribute('data-src');
-    };
-  });  
-}
+// window.onload = () => {
+//   [].forEach.call(document.querySelectorAll('img.restaurant-img[data-src]'), function(img) {
+//     img.setAttribute('src', img.getAttribute('data-src'));
+//     img.onload = function() {
+//       img.removeAttribute('data-src');
+//     };
+//   });  
+// }
 
 
 /**
@@ -24,6 +24,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
   console.log("domcontentloaded load");
   fetchNeighborhoods();
   fetchCuisines();
+
+  // [].forEach.call(document.querySelectorAll('img.restaurant-img[data-src]'), function (img) {
+  //   img.setAttribute('src', img.getAttribute('data-src'));
+  //   img.onload = function () {
+  //     img.removeAttribute('data-src');
+  //   };
+  // });
 });
 
 
@@ -85,8 +92,8 @@ fillCuisinesHTML = (cuisines = self.cuisines) => {
 /**
  * Initialize Google map, called from HTML.
  */
-window.initMap = () => {  
-  
+window.initMap = () => {
+
   let loc = {
     lat: 40.722216,
     lng: -73.987501
@@ -142,17 +149,17 @@ resetRestaurants = (restaurants) => {
  */
 fillRestaurantsHTML = (restaurants = self.restaurants) => {
   const ul = document.getElementById('restaurants-list');
-  if(restaurants.length === 0){
+  if (restaurants === undefined || (restaurants && restaurants.length === 0)) {
     const span = document.createElement('span');
     span.classList = ["text-danger", "font-weight-bold"];
     span.textContent = "NO RESTAURANT(s) FOUND";
     ul.append(span);
-  }else{
-  restaurants.forEach(restaurant => {
-    ul.append(createRestaurantHTML(restaurant));
-  });
-  addMarkersToMap();
-}
+  } else {
+    restaurants.forEach(restaurant => {
+      ul.append(createRestaurantHTML(restaurant));
+    });
+    addMarkersToMap();
+  }
 }
 
 /**
@@ -165,27 +172,27 @@ createRestaurantHTML = (restaurant) => {
   const imgparts = imageurl.split(".");
   const imgurl1x = imgparts[0] + "-350w_1x." + imgparts[1];
   const imgurl2x = imgparts[0] + "-700w_2x." + imgparts[1];
-   
+
   const image = document.createElement('img');
-  image.className = 'restaurant-img';  
- // image.src = imgurl1x;
+  image.className = 'restaurant-img';
+  image.src = imgurl1x;
   image.srcset = `${imgurl1x} 350w, ${imgurl2x} 700w`;
   image.alt = restaurant.name + " tile image";
-  image.setAttribute('data-src', imgurl1x);
+  //image.setAttribute('data-src', imgurl1x);
   li.append(image);
-  
+
 
   const name = document.createElement('h2');
   name.innerHTML = restaurant.name;
   li.append(name);
 
- 
-  var isFavorite = (restaurant.is_favorite && restaurant.is_favorite == "true") ? true : false;  
+
+  var isFavorite = (restaurant.is_favorite && restaurant.is_favorite == "true") ? true : false;
   const btnFavorite = document.createElement('button');
-  btnFavorite.innerHTML = '❤';  
+  btnFavorite.innerHTML = '❤';
   btnFavorite.type = "button"
   btnFavorite.setAttribute('id', `btnFavorite-${restaurant.id}`);
-  btnFavorite.classList.add("btn-favorite");  
+  btnFavorite.classList.add("btn-favorite");
   restaurant.is_favorite = isFavorite;
   btnFavorite.onclick = () => {
     var currentState = !restaurant.is_favorite;
@@ -224,26 +231,26 @@ addMarkersToMap = (restaurants = self.restaurants) => {
       window.location.href = marker.url
     });
     self.markers.push(marker);
-  });  
+  });
 }
 
 /**
    * Change class based on btnFavorite button click
    */
-  changeBtnFavoriteClass = (btn, currentState) => {
-    if(!currentState){  
-      btn.classList.remove("btn-favorite-true");
-      btn.classList.add('btn-favorite-false');
-      btn.setAttribute('aria-label', 'Make me as your favorite restaurant');
-      btn.setAttribute('text', 'Make me as your favorite restaurant');
-    }else{
-      btn.classList.remove('btn-favorite-false');    
-      btn.classList.add("btn-favorite-true");
-      btn.setAttribute('aria-label', 'I am your favorite restaurant');
-      btn.setAttribute('text', 'I am your favorite restaurant');
-    }  
+changeBtnFavoriteClass = (btn, currentState) => {
+  if (!currentState) {
+    btn.classList.remove("btn-favorite-true");
+    btn.classList.add('btn-favorite-false');
+    btn.setAttribute('aria-label', 'Make me as your favorite restaurant');
+    btn.setAttribute('text', 'Make me as your favorite restaurant');
+  } else {
+    btn.classList.remove('btn-favorite-false');
+    btn.classList.add("btn-favorite-true");
+    btn.setAttribute('aria-label', 'I am your favorite restaurant');
+    btn.setAttribute('text', 'I am your favorite restaurant');
   }
-  
+}
+
   /**
    * Updating the restaurant is_favorite state.
    */
@@ -252,5 +259,5 @@ addMarkersToMap = (restaurants = self.restaurants) => {
   //   //DBHelper.updateIsFavorite(restaurant, newState);
   //   console.log("old state..", restaurant["is_favorite"], "..new state...", !restaurant["is_favorite"]);
   //   changeBtnFavoriteClass(document.getElementById(`btnFavorite-${restaurant.id}`), restaurant.is_favorite);
-   
+
   // }
