@@ -1,5 +1,7 @@
 let restaurant;
 var map;
+let restaurantInteractiveMap = false;
+let restaurantInitialLoad = true;
 
 /**
  * Lazy Loading Images by setting src attribute only after page load and removing data-src attribute 
@@ -13,7 +15,7 @@ var map;
 //     img.removeAttribute('data-src');
 //   };
 // });
- 
+
 
 
 
@@ -25,16 +27,33 @@ window.initMap = () => {
     if (error) { // Got an error!
       console.error(error);
     } else {
-      self.map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 16,
-        center: restaurant.latlng,
-        scrollwheel: false
-      });
+      // self.map = new google.maps.Map(document.getElementById('map'), {
+      //   zoom: 16,
+      //   center: restaurant.latlng,
+      //   scrollwheel: false
+      // });
       fillBreadcrumb();
-      DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
+      // DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
     }
   });
 }
+
+/**
+ * Displaying Interactive Map onclick of StaticMap
+ */
+const displayInteractiveMap = event => {
+  if (restaurantInteractiveMap)
+    return;
+
+  document.getElementById("restaurantStaticMap").remove();
+  self.map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 16,
+        center: self.restaurant.latlng,
+        scrollwheel: false
+  });
+  DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
+  restaurantInteractiveMap = true;
+};
 
 /**
  * Get current restaurant from page URL.
@@ -54,7 +73,7 @@ fetchRestaurantFromURL = (callback) => {
       if (!restaurant) {
         console.error(error);
         return;
-      }
+      }     
       fillRestaurantHTML();
       callback(null, restaurant)
     });
@@ -85,6 +104,21 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
 
+  if (restaurantInitialLoad) {
+    const url = DBHelper.displayStaticMapOnDetailsPage(restaurant);
+    const div = document.getElementById("map");
+    const img = document.createElement("img");
+    img.id = "restaurantStaticMap";
+    img.onclick = e => displayInteractiveMap();
+    img.src = url;
+    img.alt = "Restaurant Static Map";
+    div.append(img);
+
+    restaurantInitialLoad = false;
+  }else{
+    DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
+  }
+
   // fill operating hours
   if (restaurant.operating_hours) {
     fillRestaurantHoursHTML();
@@ -105,7 +139,6 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
   hours.insertBefore(title, hours.childNodes[0]);
   for (let key in operatingHours) {
     const row = document.createElement('tr');
-
     const day = document.createElement('td');
     day.innerHTML = key.trim();
     row.appendChild(day);
@@ -113,7 +146,6 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
     const time = document.createElement('td');
     time.innerHTML = operatingHours[key].trim();
     row.appendChild(time);
-
     hours.appendChild(row);
   }
 }
@@ -251,8 +283,6 @@ addReviewHTMLToDOM = (reviewObj) => {
 addNewReview = (event) => {
   //event.preventDefault();
   const reviewAuthor = document.getElementById("reviewer-name").value;
-  //const reviewerRatingSelect = document.getElementById("reviewer-rating-select");
-  //const reviewerRating = reviewerRatingSelect.options[reviewerRatingSelect.selectedIndex].value;
   const reviewerRating = document.querySelector("#reviewer-rating-select option:checked").value;
   const reviewerComments = document.getElementById("reviewer-comments").value;
   document.getElementById("reviewer-name-error").innerHTML = "";
@@ -285,14 +315,13 @@ addNewReview = (event) => {
     "createdAt": new Date()
   }
 
-  // console.log('robj..', robj);
   DBHelper.addNewReview(self.restaurant.id, reviewObj, (error, review) => {
     if (error) {
       console.log("Unable to add new review to server", error);
     }
     document.getElementById("add-review-submit").disabled = false;
   });
-  //DBHelper.addNewReview(self.restaurant.id, reviewObj);
+
   addReviewHTMLToDOM(IDBobj);
   newReviewformReset();
 

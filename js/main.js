@@ -1,6 +1,8 @@
 let restaurants,
   neighborhoods,
   cuisines
+let interactiveMap = false;
+let initialLoad = true;
 var map
 var markers = []
 
@@ -14,6 +16,9 @@ var markers = []
 //       img.removeAttribute('data-src');
 //     };
 //   });  
+
+//   // fetchNeighborhoods();
+//   // fetchCuisines();
 // }
 
 
@@ -21,7 +26,6 @@ var markers = []
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
 document.addEventListener('DOMContentLoaded', (event) => {
-  console.log("domcontentloaded load");
   fetchNeighborhoods();
   fetchCuisines();
 
@@ -52,6 +56,7 @@ fetchNeighborhoods = () => {
  * Set neighborhoods HTML.
  */
 fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
+  //self.neighborhoods = neighborhoods;
   const select = document.getElementById('neighborhoods-select');
   neighborhoods.forEach(neighborhood => {
     const option = document.createElement('option');
@@ -79,6 +84,7 @@ fetchCuisines = () => {
  * Set cuisines HTML.
  */
 fillCuisinesHTML = (cuisines = self.cuisines) => {
+  // self.cuisines = cuisines;
   const select = document.getElementById('cuisines-select');
 
   cuisines.forEach(cuisine => {
@@ -93,16 +99,15 @@ fillCuisinesHTML = (cuisines = self.cuisines) => {
  * Initialize Google map, called from HTML.
  */
 window.initMap = () => {
-
-  let loc = {
-    lat: 40.722216,
-    lng: -73.987501
-  };
-  self.map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 12,
-    center: loc,
-    scrollwheel: false
-  });
+  // let loc = {
+  //   lat: 40.722216,
+  //   lng: -73.987501
+  // };
+  // self.map = new google.maps.Map(document.getElementById('map'), {
+  //   zoom: 12,
+  //   center: loc,
+  //   scrollwheel: false
+  // });
   updateRestaurants();
 }
 
@@ -145,6 +150,24 @@ resetRestaurants = (restaurants) => {
 }
 
 /**
+ * Displaying Interactive Map onclick of StaticMap
+ */
+const displayInteractiveMap = event => {
+ // updateRestaurants();
+  if (interactiveMap)
+    return;
+
+  document.getElementById("staticMap").remove();
+  self.map = new google.maps.Map(document.getElementById("map"), {
+    zoom: 12,
+    center: DBHelper.MAP_LOC,
+    scrollwheel: false
+  });
+  addMarkersToMap();
+  interactiveMap = true;
+};
+
+/**
  * Create all restaurants HTML and add them to the webpage.
  */
 fillRestaurantsHTML = (restaurants = self.restaurants) => {
@@ -158,9 +181,37 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
     restaurants.forEach(restaurant => {
       ul.append(createRestaurantHTML(restaurant));
     });
-    addMarkersToMap();
+
+    self.restaurants = restaurants;
+    if (initialLoad) {
+      if (document.getElementById("cuisines-select").length === 1) {
+        const cuisines = restaurants.map((v, i) => restaurants[i].cuisine_type);
+        self.cuisines = cuisines.filter((v, i) => cuisines.indexOf(v) == i);
+        fillCuisinesHTML();
+      }
+      if (document.getElementById("neighborhoods-select").length === 1) {
+        const neighborhoods = restaurants.map((v, i) => restaurants[i].neighborhood);
+        self.neighborhoods = neighborhoods.filter((v, i) => neighborhoods.indexOf(v) == i);
+        fillNeighborhoodsHTML();
+      }
+
+      const url = DBHelper.displayStaticMap(self.restaurants);
+      const div = document.getElementById("map");
+      const img = document.createElement("img");
+      img.id = "staticMap";
+      img.onclick = e => displayInteractiveMap();
+      img.src = url;
+      img.alt = "Restaurant Reviews Static Map";
+      div.append(img);
+
+      initialLoad = false;
+    } else {
+      addMarkersToMap();
+    }
   }
 }
+
+
 
 /**
  * Create restaurant HTML.
